@@ -4,6 +4,7 @@ from discord.ext.commands import Bot as BotBase
 from discord.ext.commands import CommandNotFound
 from discord import Embed, File
 from datetime import datetime
+from ..db import db
 
 PREFIX = "o!"
 OWNER_IDS = [556801303595188227]
@@ -14,8 +15,9 @@ class Bot(BotBase):
         self.PREFIX = PREFIX
         self.ready = False
         self.guild = None
-        self.SCHEDULER = AsyncIOScheduler()
+        self.scheduler = AsyncIOScheduler()
 
+        db.autosave(self.scheduler)
         super().__init__(
             command_prefix=PREFIX,
             owner_ids=OWNER_IDS,
@@ -61,21 +63,23 @@ class Bot(BotBase):
         if not self.ready:
             self.ready = True
             self.guild = self.get_guild(928595300828987442)
+            self.scheduler.start()
+
+            #channel = self.get_channel(928595300828987445)
+            #await channel.send("Oasis is formed!")
+
+            #embed = Embed(title="Oasis is formed!",
+             #             description="The bot is up and running",
+              #            color=0Xf59e4c,
+               #           timestamp=datetime.utcnow())
+
+            #embed.set_footer(text="Chrysus")
+            #embed.set_author(name="Oasis", icon_url=self.guild.icon_url)
+
+            #await channel.send(embed=embed)
+            #await channel.send(file=File("./data/images/oasis_banner.png"))
+
             print("Oasis is ready")
-
-            channel = self.get_channel(928595300828987445)
-            await channel.send("Oasis is formed!")
-
-            embed = Embed(title="Oasis is formed!",
-                          description="The bot is up and running",
-                          color=0Xf59e4c,
-                          timestamp=datetime.utcnow())
-
-            embed.set_footer(text="Chrysus")
-            embed.set_author(name="Oasis", icon_url=self.guild.icon_url)
-
-            await channel.send(embed=embed)
-            await channel.send(file=File("./data/images/oasis_banner.png"))
 
         else:
             print("Oasis recontructing...")
